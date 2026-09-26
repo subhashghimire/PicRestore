@@ -9,13 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Pure-managed, cross-platform image codec: no native binaries to bundle for JPEG/PNG/BMP/TIFF I/O.
-         Kept separate from PicRestore.Core so the domain model stays codec-agnostic. -->
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.2" />
+    <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
 
 </Project>
