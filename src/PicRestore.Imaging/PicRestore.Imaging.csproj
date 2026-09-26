@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>PicRestore.Imaging</RootNamespace>
+    <AssemblyName>PicRestore.Imaging</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pure-managed, cross-platform image codec: no native binaries to bundle for JPEG/PNG/BMP/TIFF I/O.
+         Kept separate from PicRestore.Core so the domain model stays codec-agnostic. -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
+  </ItemGroup>
+
+</Project>

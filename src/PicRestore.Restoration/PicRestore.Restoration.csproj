@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>PicRestore.Restoration</RootNamespace>
+    <AssemblyName>PicRestore.Restoration</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
+  </ItemGroup>
+
+</Project>

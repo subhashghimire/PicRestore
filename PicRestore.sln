@@ -1,0 +1,46 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.Core", "src\PicRestore.Core\PicRestore.Core.csproj", "{50DCCBC6-7502-46C2-A400-36453607ADB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.Imaging", "src\PicRestore.Imaging\PicRestore.Imaging.csproj", "{AE6C39E0-E1AD-46B2-AF02-364C63037D2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.Restoration", "src\PicRestore.Restoration\PicRestore.Restoration.csproj", "{B74F3AF6-BFE6-4128-A174-A4269ABDCE95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.Tests", "src\PicRestore.Tests\PicRestore.Tests.csproj", "{8FF50E6B-1A31-4D71-A9C9-1C433214C337}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.App", "src\PicRestore.App\PicRestore.App.csproj", "{101CEEE1-AC98-4189-96FB-5E27517B6709}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50DCCBC6-7502-46C2-A400-36453607ADB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50DCCBC6-7502-46C2-A400-36453607ADB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50DCCBC6-7502-46C2-A400-36453607ADB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50DCCBC6-7502-46C2-A400-36453607ADB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6C39E0-E1AD-46B2-AF02-364C63037D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6C39E0-E1AD-46B2-AF02-364C63037D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6C39E0-E1AD-46B2-AF02-364C63037D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6C39E0-E1AD-46B2-AF02-364C63037D2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B74F3AF6-BFE6-4128-A174-A4269ABDCE95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B74F3AF6-BFE6-4128-A174-A4269ABDCE95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B74F3AF6-BFE6-4128-A174-A4269ABDCE95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B74F3AF6-BFE6-4128-A174-A4269ABDCE95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF50E6B-1A31-4D71-A9C9-1C433214C337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF50E6B-1A31-4D71-A9C9-1C433214C337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF50E6B-1A31-4D71-A9C9-1C433214C337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF50E6B-1A31-4D71-A9C9-1C433214C337}.Release|Any CPU.Build.0 = Release|Any CPU
+		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

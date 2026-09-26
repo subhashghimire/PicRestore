@@ -1,0 +1,20 @@
+<Window
+    x:Class="PicRestore.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <NavigationView x:Name="RootNavigationView"
+                    IsBackButtonVisible="Collapsed"
+                    IsSettingsVisible="False"
+                    PaneDisplayMode="Left"
+                    SelectionChanged="RootNavigationView_SelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Name="ImportItem" Content="Import" Tag="Import" IsSelected="True" />
+            <NavigationViewItem Content="Mask Editor" Tag="MaskEditor" />
+            <NavigationViewItem Content="Compare" Tag="Compare" />
+            <NavigationViewItem Content="Export" Tag="Export" />
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="ContentFrame" />
+    </NavigationView>
+</Window>

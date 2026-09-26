@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    WinUI 3 desktop app. This project only builds on Windows with the Windows App SDK workload
+    installed (Visual Studio 2022 "Windows application development" workload, or the standalone
+    Windows App SDK) - see the repository README for setup. It is deliberately unpackaged
+    (WindowsPackageType=None) for a simple `dotnet build`/`dotnet run` inner loop during development;
+    MSIX packaging (per the design plan's Technology Stack) is a Phase-3 roadmap item.
+  -->
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>PicRestore.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
+    <ProjectReference Include="..\PicRestore.Imaging\PicRestore.Imaging.csproj" />
+    <ProjectReference Include="..\PicRestore.Restoration\PicRestore.Restoration.csproj" />
+  </ItemGroup>
+
+</Project>

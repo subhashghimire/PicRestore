@@ -1,0 +1,29 @@
+<Page
+    x:Class="PicRestore.App.Views.ComparePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="24" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Spacing="16">
+            <TextBlock Text="Before" VerticalAlignment="Center" />
+            <Slider x:Name="CompareSlider" Minimum="0" Maximum="1" StepFrequency="0.01" Width="260" Value="1"
+                    ValueChanged="CompareSlider_ValueChanged" />
+            <TextBlock Text="After" VerticalAlignment="Center" />
+            <ToggleButton Content="Show confidence heat map" Click="HeatMapToggle_Click" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Image x:Name="BeforeImage" Stretch="Uniform" />
+            <Image x:Name="AfterImage" Stretch="Uniform" Opacity="1" />
+            <Image x:Name="HeatMapImage" Stretch="Uniform" Visibility="Collapsed" />
+        </Grid>
+
+        <ListView Grid.Row="2" x:Name="HistoryList" Height="140" />
+    </Grid>
+</Page>
