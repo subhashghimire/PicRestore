@@ -12,7 +12,7 @@
 
         <StackPanel Orientation="Horizontal" Spacing="16">
             <TextBlock Text="Before" VerticalAlignment="Center" />
-            <Slider x:Name="CompareSlider" Minimum="0" Maximum="1" StepFrequency="0.01" Width="260" Value="1"
+            <Slider x:Name="CompareSlider" Minimum="0" Maximum="1" Width="260"
                     ValueChanged="CompareSlider_ValueChanged" />
             <TextBlock Text="After" VerticalAlignment="Center" />
             <ToggleButton Content="Show confidence heat map" Click="HeatMapToggle_Click" />

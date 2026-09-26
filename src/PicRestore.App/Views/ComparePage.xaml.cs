@@ -19,6 +19,14 @@ public sealed partial class ComparePage : Page
     public ComparePage()
     {
         InitializeComponent();
+
+        // Set declaratively in XAML, StepFrequency="0.01" combined with Value="1" on the same Slider
+        // tag throws a XamlParseException at load time on this Windows App SDK version (a binary
+        // floating-point rounding artifact in 0.01 trips a step-alignment check during markup
+        // compilation). Assigning them here, after the control already exists, goes through the plain
+        // runtime property setters instead and is unaffected.
+        CompareSlider.StepFrequency = 0.01;
+        CompareSlider.Value = 1;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

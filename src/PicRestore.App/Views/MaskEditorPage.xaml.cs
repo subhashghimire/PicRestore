@@ -165,6 +165,22 @@ public sealed partial class MaskEditorPage : Page
             return;
         }
 
-        await _viewModel.RunRestorationAsync();
+        var button = (Button)sender;
+        button.IsEnabled = false;
+        CoverageText.Text = "Restoring... this can take a while for large or heavily damaged photos.";
+
+        try
+        {
+            await _viewModel.RunRestorationAsync();
+            UpdateCoverageText();
+        }
+        catch (Exception ex)
+        {
+            CoverageText.Text = $"Restoration failed: {ex.Message}";
+        }
+        finally
+        {
+            button.IsEnabled = true;
+        }
     }
 }

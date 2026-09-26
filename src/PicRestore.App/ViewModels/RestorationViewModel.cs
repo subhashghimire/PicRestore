@@ -110,8 +110,19 @@ public sealed class RestorationViewModel : ObservableObject
             return;
         }
 
+        StatusMessage = "Restoring... this can take a while for large or heavily damaged photos.";
         History.Clear();
-        _resultImage = _pipeline.Run(_originalImage, _mask, Settings, Project);
+
+        // The classical pipeline (diffusion inpainting especially) is CPU-bound and can run for a
+        // meaningful amount of time on a large, heavily-damaged photo. Running it directly on the
+        // caller's thread would freeze the UI for that whole duration, since this method is invoked
+        // from a button click handler on the UI thread - Task.Run moves the actual work off it.
+        RasterImage originalImage = _originalImage;
+        DamageMask mask = _mask;
+        ProcessingSettings settings = Settings;
+        RestorationProject? project = Project;
+
+        _resultImage = await Task.Run(() => _pipeline.Run(originalImage, mask, settings, project));
         ResultBitmap = await BitmapConverter.ToWriteableBitmapAsync(_resultImage);
 
         if (Project is not null)
