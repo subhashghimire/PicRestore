@@ -48,7 +48,7 @@ public sealed class SimpleFaceIdentityGuard : IFaceIdentityGuard
             false,
             share,
             $"Largest contiguous repaired region covers {share:P1} of the image - too large to " +
-            "reconstruct with confidence; falling back to a more conservative repair.");
+            "reconstruct with full confidence.");
     }
 
     private static int FindLargestContiguousRepairedBlob(DamageMask mask)
@@ -62,7 +62,7 @@ public sealed class SimpleFaceIdentityGuard : IFaceIdentityGuard
             for (int x = 0; x < mask.Width; x++)
             {
                 int start = mask.IndexOf(x, y);
-                if (visited[start] || !mask.IsRepairable(x, y, 0.5f))
+                if (visited[start] || !mask.IsReconstructable(x, y, 0.5f))
                 {
                     continue;
                 }
@@ -86,7 +86,7 @@ public sealed class SimpleFaceIdentityGuard : IFaceIdentityGuard
                         }
 
                         int ni = mask.IndexOf(nx, ny);
-                        if (!visited[ni] && mask.IsRepairable(nx, ny, 0.5f))
+                        if (!visited[ni] && mask.IsReconstructable(nx, ny, 0.5f))
                         {
                             visited[ni] = true;
                             stack.Push((nx, ny));

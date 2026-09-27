@@ -1,0 +1,64 @@
+<Page
+    x:Class="PicRestore.App.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Padding="24" Spacing="14" MaxWidth="780" HorizontalAlignment="Left">
+            <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
+
+            <!-- RESTORATION -->
+            <TextBlock Text="Restoration" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,8,0,0" />
+            <Slider x:Name="SharpeningSlider" Header="Subtle sharpening (protocol default: 10%)"
+                    Minimum="0" Maximum="30" StepFrequency="1" MaxWidth="420" HorizontalAlignment="Left"
+                    ValueChanged="SharpeningSlider_ValueChanged" />
+            <TextBlock x:Name="SharpeningText" TextWrapping="Wrap" Opacity="0.8"
+                       Text="Compensates for age blur only. Values above 20% start to look like modern digital sharpening." />
+            <ToggleSwitch x:Name="LockFacesToggle" Header="Lock faces"
+                          OnContent="On - only confident damage on faces is repaired"
+                          OffContent="Off - faces are treated like the rest of the photo"
+                          Toggled="LockFacesToggle_Toggled" />
+            <TextBlock x:Name="FaceLockText" TextWrapping="Wrap" Opacity="0.8" />
+            <ToggleSwitch x:Name="StrictGuardToggle" Header="Strict identity guard"
+                          OffContent="Off - warn when a repair covers a large area"
+                          OnContent="On - skip reconstruction when a repair covers a large area"
+                          Toggled="StrictGuardToggle_Toggled" />
+
+            <!-- DAMAGE MODEL TRAINING -->
+            <TextBlock Text="Damage detection model" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
+            <TextBlock x:Name="ActiveModelText" TextWrapping="Wrap" FontWeight="SemiBold" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                       Text="Teach PicRestore what damage looks like in your photos. Add a damaged scan together with a restored version of the same photo (from a professional, another tool, or your own careful retouch). The places where the two differ become examples of damage. A newly trained model is only used if it detects damage at least as well as the current one on parts of your photos it was not trained on." />
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="AddPairButton" Content="Add before/after pair..." Click="AddPairButton_Click" />
+                <Button x:Name="TrainButton" Content="Train now" Click="TrainButton_Click"
+                        Style="{ThemeResource AccentButtonStyle}" />
+                <Button x:Name="ResetModelButton" Content="Reset to built-in model" Click="ResetModelButton_Click" />
+            </StackPanel>
+
+            <ToggleSwitch x:Name="AutoTrainToggle" Header="Keep improving automatically"
+                          OnContent="Retrain whenever a pair is added"
+                          OffContent="Only when I click Train now"
+                          Toggled="AutoTrainToggle_Toggled" />
+
+            <ProgressBar x:Name="TrainingProgressBar" Minimum="0" Maximum="100" Value="0"
+                         MaxWidth="420" HorizontalAlignment="Left" Visibility="Collapsed" />
+            <TextBlock x:Name="TrainingStatusText" TextWrapping="Wrap" />
+            <InfoBar x:Name="TrainingInfoBar" IsOpen="False" IsClosable="True" />
+
+            <TextBlock Text="Training pairs" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,0" />
+            <TextBlock x:Name="NoPairsText" Text="No pairs yet." Opacity="0.7" />
+            <ListView x:Name="PairsList" SelectionMode="Single" MaxHeight="240"
+                      SelectionChanged="PairsList_SelectionChanged" />
+            <Button x:Name="RemovePairButton" Content="Remove selected pair" IsEnabled="False"
+                    Click="RemovePairButton_Click" />
+            <Image x:Name="PairPreviewImage" MaxHeight="320" Stretch="Uniform" HorizontalAlignment="Left" />
+            <TextBlock x:Name="PairPreviewCaption" TextWrapping="Wrap" Opacity="0.8" />
+
+            <TextBlock Text="Training history" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,0" />
+            <TextBlock x:Name="HistoryText" TextWrapping="Wrap" FontSize="12" IsTextSelectionEnabled="True" Opacity="0.85" />
+            <TextBlock x:Name="LibraryFolderText" TextWrapping="Wrap" FontSize="12" Opacity="0.6" IsTextSelectionEnabled="True" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

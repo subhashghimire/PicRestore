@@ -7,9 +7,14 @@
     (WindowsPackageType=None) for a simple `dotnet build`/`dotnet run` inner loop during development;
     MSIX packaging (per the design plan's Technology Stack) is a Phase-3 roadmap item.
 
-    Runs framework-dependent against a system-wide Windows App Runtime 2.5.1 install. Self-contained
-    deployment was tried and hit a reproducible crash (0xc000027b in Microsoft.UI.Xaml.dll on launch,
-    unaffected by disabling trimming/single-file/ReadyToRun) - not worth chasing further right now.
+    Release builds and the Windows installer are produced by build\package.ps1 (see docs/PACKAGING.md);
+    publish settings are passed on its command line so the development loop above stays unchanged.
+
+    Development builds run framework-dependent against a system-wide Windows App Runtime install.
+    Published builds (build\package.ps1) are fully self-contained. The 0xc000027b launch crash that
+    self-contained publishing used to hit was `dotnet publish` leaving out the app's compiled XAML
+    (*.xbf) and resource index (PicRestore.App.pri); the CopyWinUIResourcesToPublish target below
+    copies them.
   -->
 
   <PropertyGroup>
@@ -22,7 +27,34 @@
     <WindowsPackageType>None</WindowsPackageType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Identity shown in Explorer file properties, the About tab, and the installer. -->
+    <ApplicationIcon>Assets\PicRestore.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>PicRestore</Product>
+    <Company>PicRestore</Company>
+    <Description>Faithful restoration of old photographs</Description>
+    <Copyright>Copyright © 2026 PicRestore</Copyright>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\PicRestore.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
+    `dotnet publish` of an unpackaged WinUI 3 app doesn't copy the compiled XAML (*.xbf) or the app's
+    PRI resource index to the publish folder, and without them the app dies on launch with 0xc000027b.
+    Copy them from the build output after publishing.
+  -->
+  <Target Name="CopyWinUIResourcesToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <_PicRestoreWinUIResource Include="$(OutDir)**\*.xbf" />
+      <_PicRestoreWinUIResource Include="$(OutDir)*.pri" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PicRestoreWinUIResource)"
+          DestinationFiles="@(_PicRestoreWinUIResource->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
@@ -32,6 +64,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
     <ProjectReference Include="..\PicRestore.Imaging\PicRestore.Imaging.csproj" />
+    <ProjectReference Include="..\PicRestore.Ml\PicRestore.Ml.csproj" />
     <ProjectReference Include="..\PicRestore.Restoration\PicRestore.Restoration.csproj" />
   </ItemGroup>
 

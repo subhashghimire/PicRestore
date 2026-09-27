@@ -1,0 +1,67 @@
+<Page
+    x:Class="PicRestore.App.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Page.Resources>
+        <Style x:Key="Bullet" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="16,0,0,0" />
+        </Style>
+        <Style x:Key="Para" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Padding="24" Spacing="10" MaxWidth="820" HorizontalAlignment="Left">
+            <TextBlock Text="About PicRestore" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock x:Name="VersionText" Style="{StaticResource Para}" Opacity="0.7" />
+
+            <TextBlock Text="faithful-photo-restoration" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,12,0,0" />
+            <TextBlock Style="{StaticResource Para}"
+                       Text="Restores old, faded, or damaged vintage photographs (e.g., Polaroids) using conservative archival principles. Use when requested to restore, clean, or repair photographs while strictly preserving original faces, clothing patterns, designs, and intact details without AI reinterpretation." />
+
+            <TextBlock Text="Instructions" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,0" />
+            <TextBlock Text="Faithful Photo Restoration" Style="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock Style="{StaticResource Para}"
+                       Text="Archival restoration protocol for vintage and Polaroid photographs. Prioritizes historical accuracy, identity preservation, and conservative localized repair over generative reinterpretation." />
+
+            <TextBlock Text="Restoration Principles" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,8,0,0" />
+
+            <TextBlock Text="1. Ground Truth &amp; Strict Preservation" Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Intact Areas as Ground Truth: Never modify, redraw, beautify, or replace undamaged regions simply to make them sharper or cleaner." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Clothing Patterns &amp; Fabrics: Retain original clothing patterns, diagonal stripes, pinstripes, prints, and fabric layouts. Never allow generative models to replace simple or degraded patterns with hallucinated ornate/floral motifs." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Faces &amp; Identity: Do not alter facial structure, eyes, nose, mouth, hair, expressions, or body proportions. Avoid beauty filters or synthetic face replacement." />
+
+            <TextBlock Text="2. Localized Damage Repair" Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Scan for specific white patches, chemical stains, fading, scratches, and spots." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Reconstruct only genuinely damaged areas using surrounding contextual pixels, edges, lighting, and textures." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Prefer conservative pixel repair / localized inpainting over full-frame generative re-synthesis." />
+
+            <TextBlock Text="3. Color &amp; Lighting Restoration" Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Correct aging color casts (yellowing, whitening, bleaching, color shifts) using surviving intact regions as the primary reference." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Recover natural saturation and skin tones without introducing modern, overly saturated digital color palettes." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Retain period-accurate film and Polaroid color characteristics." />
+
+            <TextBlock Text="4. Controlled Sharpening" Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Apply slight global sharpening (~10%) solely to compensate for age-related lens blur and chemical fading." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Avoid hyper-sharpness, plastic skin textures, modern HDR effects, or artificial micro-details." />
+
+            <TextBlock Text="Execution Checklist" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,8,0,0" />
+            <TextBlock Style="{StaticResource Bullet}" Text="1. Damage Masking: Isolate damaged regions (e.g., corner stains, chemical spots) for targeted repair." />
+            <TextBlock Style="{StaticResource Bullet}" Text="2. Locked Elements: Lock intact facial features and clothing patterns to prevent unwanted pattern replacement." />
+            <TextBlock Style="{StaticResource Bullet}" Text="3. Tonal Correction: Adjust color cast and contrast conservatively." />
+            <TextBlock Style="{StaticResource Bullet}" Text="4. Subtle Sharpening: Apply 10% sharpening pass for final clarity." />
+
+            <TextBlock Text="How PicRestore applies this protocol" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0" />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Damage masking: a learned detector proposes a damage map that you review and correct in the Mask Editor (damage brush, protect brush) before anything is changed. It can be trained further on your own before/after pairs under Settings." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Locked elements: pixels the detector is confident are intact, and everything you paint with the protect brush, are never changed - not by reconstruction, not by its seam blending, not by sharpening." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Localized repair: only masked pixels are reconstructed, by a local inpainting model (LaMa) that continues the surrounding texture, edges and light. There is no full-frame generative re-synthesis and no face replacement; the optional AI face enhancement stays off unless you turn it on." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Tonal correction: colour cast, contrast and fading are corrected using statistics from the intact areas only, each correction only when the photo shows that problem, with saturation capped at +20%." />
+            <TextBlock Style="{StaticResource Bullet}" Text="• Subtle sharpening: a final luminance-only unsharp mask at 10% (adjustable in Settings), with a noise threshold so grain and skin are not turned into digital texture." />
+            <TextBlock Style="{StaticResource Para}" Opacity="0.7" Margin="0,8,0,0"
+                       Text="Because PicRestore only rebuilds what can be inferred from surrounding pixels, content that is completely destroyed (for example a face hidden under a blotch) is filled plausibly but not re-invented. Tools that re-draw such areas are generating new detail, which this protocol deliberately avoids." />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

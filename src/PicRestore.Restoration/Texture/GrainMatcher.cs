@@ -39,7 +39,7 @@ public sealed class GrainMatcher : IGrainMatcher
             {
                 (float r, float g, float b, float a) = reconstructed.GetPixel(x, y);
 
-                if (mask.IsRepairable(x, y, settings.RepairThreshold))
+                if (mask.IsReconstructable(x, y, settings.RepairThreshold))
                 {
                     r = Math.Clamp(r + (float)(NextGaussian(rng) * grainSigma), 0f, 1f);
                     g = Math.Clamp(g + (float)(NextGaussian(rng) * grainSigma), 0f, 1f);
@@ -62,7 +62,7 @@ public sealed class GrainMatcher : IGrainMatcher
         {
             for (int x = 1; x < image.Width - 1; x++)
             {
-                if (mask.IsRepairable(x, y, threshold))
+                if (mask.IsReconstructable(x, y, threshold))
                 {
                     continue; // Only measure grain where the photo's own detail is trustworthy.
                 }

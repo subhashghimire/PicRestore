@@ -11,18 +11,24 @@ building and contributing.
 
 ## What's here
 
-This is the Phase-1 MVP from the roadmap: a classical (non-ML) restoration pipeline plus a WinUI 3
-shell, built so the workflow is usable and testable end to end before any model gets trained. Phase 2
-(a learned damage-segmentation model and a LaMa-based reconstruction model, both via ONNX Runtime +
-DirectML) slots into the same interfaces without changing the app around it.
+PicRestore follows the archival restoration protocol in [docs/RESTORATION_PROTOCOL.md](docs/RESTORATION_PROTOCOL.md)
+(also shown in the app's About tab): intact areas are ground truth, repairs are localized, faces and
+patterns are locked, colour is corrected from intact areas, and a final ~10% sharpening pass is applied.
+
+The pipeline: colour & tone -> localized reconstruction (LaMa) -> grain matching -> opt-in AI face
+enhancement (off) -> subtle sharpening. Damage is found by a learned detector that you can keep
+training in-app from before/after pairs (Settings -> Damage detection model), with faces locked by an
+automatic face detector (YuNet).
 
 | Project | Targets | What it does |
 | --- | --- | --- |
 | `PicRestore.Core` | net8.0, cross-platform | Domain models (`RasterImage`, `DamageMask`, `ProcessingSettings`, `RestorationProject`) and the abstractions (`IDamageDetector`, `IColorRestorer`, `IInpainter`, `IGrainMatcher`, `IFaceIdentityGuard`, `IFaceEnhancer`) every other project codes against. No external dependencies. |
 | `PicRestore.Imaging` | net8.0, cross-platform | Loads/saves JPEG, JPG, PNG, BMP and TIFF via SixLabors.ImageSharp and converts to/from `RasterImage`. |
-| `PicRestore.Restoration` | net8.0, cross-platform | The Phase-1 classical pipeline: damage detection, colour/tonal restoration, diffusion-based inpainting, grain matching, a conservative identity guard, and the `RestorationPipeline` orchestrator. |
+| `PicRestore.Restoration` | net8.0, cross-platform | The pipeline: damage detection (learned MLP + the classical rule-based detector), colour/tonal restoration, LaMa tiling/compositing with a diffusion fallback, grain matching, an identity guard, and the `RestorationPipeline` orchestrator. No external dependencies. |
+| `PicRestore.Ml` | net8.0 | ONNX Runtime host for learned models: `OnnxLamaModel` and `LamaModelStore`, which downloads the ~92 MB LaMa model (OpenCV Zoo, Apache-2.0) once to `%LOCALAPPDATA%\PicRestore\Models` and verifies its SHA-256 (for an offline machine, place `inpainting_lama_2025jan.onnx` there yourself); and `OnnxFaceDetector`, running the bundled 232 KB YuNet face model (MIT). |
 | `PicRestore.Tests` | net8.0, cross-platform | xUnit tests for the pipeline above, using small synthetic images. |
 | `PicRestore.App` | net8.0-windows10.0.19041.0 (WinUI 3) | The Windows UI: Import → Mask Editor → Compare → Export, all sharing one `RestorationViewModel`. |
+| `tools/damage-model` | Python | Builds detector training data from (damaged, restored) photo pairs, trains the detector and regenerates `LearnedDamageModel.g.cs`. See its README. |
 
 ## AI-enhance mode
 
@@ -53,19 +59,38 @@ the Windows App SDK. Open `PicRestore.sln` in Visual Studio, or from a Windows m
 dotnet build src\PicRestore.App
 ```
 
-`PicRestore.App` is unpackaged (`WindowsPackageType=None`) for a simple build/run inner loop; MSIX
-packaging for distribution is a Phase-3 roadmap item.
+`PicRestore.App` is unpackaged (`WindowsPackageType=None`) for a simple build/run inner loop.
+
+## Installer and portable build
+
+```powershell
+build\package.cmd
+```
+
+This runs the tests, publishes the app, bundles the AI repair model, checks that the exe starts, and
+writes to `artifacts\`:
+
+- `PicRestore-Setup-<version>-x64.exe`: the Windows installer (needs [Inno Setup 6](https://jrsoftware.org/isinfo.php): `winget install --id JRSoftware.InnoSetup -e`).
+- `PicRestore-<version>-win-x64-portable.zip` and `publish\...\PicRestore.App.exe`: runs without installing.
+
+See [docs/PACKAGING.md](docs/PACKAGING.md) for options.
 
 ## Status & known limitations
 
-- This code was generated in a Linux sandbox without network access to the .NET SDK, so the
-  cross-platform libraries and tests have been carefully reviewed but not yet compiled here — please
-  run `dotnet build`/`dotnet test` as your first step and file an issue for anything that doesn't come
-  up clean. The WinUI 3 app can only really be verified on Windows in any case.
-- `CompositeDamageDetector` and `SimpleFaceIdentityGuard` are deliberately simple, classical/heuristic
-  Phase-1 implementations (see the code comments in `PicRestore.Restoration`), not the trained models
-  described for Phase 2 in the design plan. They exist to make the end-to-end workflow real and
-  testable now.
+- The built-in detector is trained on five before/after pairs. On held-out regions of those photos its
+  damage-map overlap (IoU) is 0.52 for the heavily damaged Polaroid and 0.02-0.19 for the lightly
+  damaged prints; on a photo it has never seen it is only 0.02-0.09. Five pairs is not enough to
+  generalise, and busy texture (foliage, soil) can be mistaken for damage - hence the conservative
+  defaults (sensitivity 0.2, face lock, locked intact pixels) and the Mask Editor review step. Adding
+  your own pairs under Settings trains it further; a new model is only adopted if it scores at least as
+  well on held-out regions and keeps what the built-in model knew.
+- LaMa rebuilds texture and structure from the surroundings; it does not invent content that is
+  completely gone (e.g. a face hidden under a blotch). Tools that do (diffusion-based "restorers")
+  are generating new detail, which is a different trade-off from this app's "restore, don't reinvent"
+  default.
+- `SimpleFaceIdentityGuard` is still a size-based placeholder with no face detection. It is advisory
+  by default (`ProcessingSettings.StrictIdentityGuard = false`): a failed check is logged as a warning
+  instead of discarding the reconstruction.
 - `OnnxFaceEnhancer` is a stub - see "AI-enhance mode" above.
 
 ## License

@@ -12,4 +12,10 @@
     <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Feature samples from the built-in training pairs (see tools/damage-model/train.py): mixed into
+         in-app training so the detector doesn't forget what it shipped with. -->
+    <EmbeddedResource Include="DamageDetection\BuiltInReplay.bin" LogicalName="PicRestore.BuiltInReplay.bin" />
+  </ItemGroup>
+
 </Project>

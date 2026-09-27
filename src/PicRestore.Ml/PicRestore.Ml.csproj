@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Learned-model runtime for PicRestore (ONNX Runtime). Kept separate from PicRestore.Restoration so the
+    restoration pipeline itself stays dependency-free and unit-testable; the app references this project
+    and plugs its models into the pipeline through PicRestore.Core.Abstractions interfaces.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>PicRestore.Ml</RootNamespace>
+    <AssemblyName>PicRestore.Ml</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PicRestore.Core\PicRestore.Core.csproj" />
+    <ProjectReference Include="..\PicRestore.Restoration\PicRestore.Restoration.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- YuNet face detector (MIT), small enough to ship so face locking works offline. -->
+    <None Include="Models\face_detection_yunet_2023mar.onnx" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -21,5 +21,12 @@ public enum DamageType
     CreaseScratchOrTear,
 
     /// <summary>No content lost, only dynamic range: contrast recovery only, never reconstruction.</summary>
-    FadedLowContrast
+    FadedLowContrast,
+
+    /// <summary>
+    /// Missing content in a jagged, speckled, or ring-edged pattern - silvering/foxing/metallic mirroring
+    /// damage - detected by standing out tonally from its own wider surroundings rather than by an
+    /// absolute brightness test. Reconstructed like other missing-content damage.
+    /// </summary>
+    MetallicOrFoxingSpeckle
 }

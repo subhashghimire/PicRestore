@@ -57,3 +57,12 @@ Thumbs.db
 
 # Rider
 *.sln.iml
+
+# Learned-model artefacts (downloaded at runtime / training data)
+*.onnx
+!src/PicRestore.Ml/Models/*.onnx
+*.onnx.part
+tools/damage-model/pairs/
+tools/damage-model/__pycache__/
+tools/damage-model/BuiltInReplay.bin
+tools/damage-model/detector_model_*.json

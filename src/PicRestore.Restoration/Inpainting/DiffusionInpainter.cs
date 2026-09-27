@@ -71,7 +71,7 @@ public sealed class DiffusionInpainter : IInpainter
             for (int x = 0; x < width; x++)
             {
                 (float r, float g, float b, float a) = image.GetPixel(x, y);
-                if (!mask.IsRepairable(x, y, settings.RepairThreshold))
+                if (!mask.IsReconstructable(x, y, settings.RepairThreshold))
                 {
                     output.SetPixel(x, y, r, g, b, a);
                     continue;
@@ -95,7 +95,7 @@ public sealed class DiffusionInpainter : IInpainter
         {
             for (int x = 0; x < mask.Width; x++)
             {
-                if (mask.IsRepairable(x, y, threshold))
+                if (mask.IsReconstructable(x, y, threshold))
                 {
                     pixels.Add((x, y));
                 }
@@ -122,7 +122,7 @@ public sealed class DiffusionInpainter : IInpainter
                     continue;
                 }
 
-                if (mask.IsRepairable(nx, ny, threshold))
+                if (mask.IsReconstructable(nx, ny, threshold))
                 {
                     continue; // Only seed from pixels that are already known.
                 }

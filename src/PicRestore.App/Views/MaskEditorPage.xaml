@@ -3,35 +3,109 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Padding="24" ColumnSpacing="16">
+    <Grid Padding="24" ColumnSpacing="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
 
+        <!-- Canvas: the damage-mask overlay while editing; a before/after cross-fade once a result
+             exists; a dimmed progress overlay while a restoration is running. -->
         <Grid x:Name="CanvasHost" Grid.Column="0">
             <Image x:Name="BaseImage" Stretch="Uniform" />
             <Image x:Name="MaskOverlayImage" Stretch="Uniform" Opacity="0.55"
                    PointerPressed="Overlay_PointerPressed"
                    PointerMoved="Overlay_PointerMoved"
                    PointerReleased="Overlay_PointerReleased" />
+            <Image x:Name="AfterImage" Stretch="Uniform" Opacity="1" Visibility="Collapsed" />
+            <Image x:Name="HeatMapImage" Stretch="Uniform" Visibility="Collapsed" />
+
+            <Grid x:Name="ProcessingOverlay" Background="#B2000000" Visibility="Collapsed">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" MaxWidth="320">
+                    <ProgressRing IsActive="True" Width="48" Height="48" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="ProcessingStageText" Text="Starting..." HorizontalAlignment="Center"
+                               FontWeight="SemiBold" Foreground="White" />
+                    <ProgressBar x:Name="ProcessingBar" Minimum="0" Maximum="100" Value="0" Width="280" />
+                    <TextBlock HorizontalAlignment="Center" Opacity="0.75" Foreground="White"
+                               TextWrapping="Wrap" TextAlignment="Center"
+                               Text="Large or heavily damaged photos can take a minute or two. The app stays responsive while it works." />
+                </StackPanel>
+            </Grid>
         </Grid>
 
-        <StackPanel Grid.Column="1" Spacing="14">
-            <TextBlock Text="Detection sensitivity" FontWeight="SemiBold" />
-            <Slider x:Name="SensitivitySlider" Minimum="0" Maximum="1" StepFrequency="0.05"
-                    ValueChanged="SensitivitySlider_ValueChanged" />
+        <!-- Right rail: editing controls, or (mutually exclusive) the result summary and export controls. -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="14">
 
-            <TextBlock Text="Brush" FontWeight="SemiBold" />
-            <ToggleButton x:Name="DamageBrushToggle" Content="Damage brush" IsChecked="True" Click="BrushToggle_Click"
-                          HorizontalAlignment="Stretch" />
-            <ToggleButton x:Name="ProtectBrushToggle" Content="Protect brush (never touch)" Click="BrushToggle_Click"
-                          HorizontalAlignment="Stretch" />
-            <Slider x:Name="BrushSizeSlider" Header="Brush size" Minimum="2" Maximum="60" Value="12" />
+                <InfoBar x:Name="StatusInfoBar" IsOpen="False" IsClosable="True" />
 
-            <TextBlock x:Name="CoverageText" TextWrapping="Wrap" />
+                <!-- EDITING STATE -->
+                <StackPanel x:Name="EditingControls" Spacing="14">
+                    <TextBlock Text="Detection sensitivity" FontWeight="SemiBold" />
+                    <Slider x:Name="SensitivitySlider" Minimum="0" Maximum="1" StepFrequency="0.05"
+                            ValueChanged="SensitivitySlider_ValueChanged" />
 
-            <Button Content="Run restoration" Click="RunButton_Click" HorizontalAlignment="Stretch" />
-        </StackPanel>
+                    <TextBlock Text="Brush" FontWeight="SemiBold" />
+                    <ToggleButton x:Name="DamageBrushToggle" Content="Damage brush" IsChecked="True" Click="BrushToggle_Click"
+                                  HorizontalAlignment="Stretch" />
+                    <ToggleButton x:Name="ProtectBrushToggle" Content="Protect brush (never touch)" Click="BrushToggle_Click"
+                                  HorizontalAlignment="Stretch" />
+                    <Slider x:Name="BrushSizeSlider" Header="Brush size" Minimum="2" Maximum="60" Value="12" />
+
+                    <TextBlock x:Name="CoverageText" TextWrapping="Wrap" Opacity="0.8" />
+
+                    <Button x:Name="RunButton" Content="Run restoration" Click="RunButton_Click"
+                            HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" />
+
+                    <!-- Mirrors the 5 stages RestorationPipeline reports progress for, so the overlay's
+                         progress bar means something instead of being a bare, unlabelled percentage. -->
+                    <StackPanel x:Name="StageList" Spacing="6" Margin="0,4,0,0">
+                        <TextBlock x:Name="Stage1Text" Text="1. Restoring colour &amp; tone" Opacity="0.5" />
+                        <TextBlock x:Name="Stage2Text" Text="2. Reconstructing damaged areas" Opacity="0.5" />
+                        <TextBlock x:Name="Stage3Text" Text="3. Matching film grain" Opacity="0.5" />
+                        <TextBlock x:Name="Stage4Text" Text="4. AI face enhancement (opt-in, off by default)" Opacity="0.5" />
+                        <TextBlock x:Name="Stage5Text" Text="5. Subtle sharpening (~10%)" Opacity="0.5" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- RESULT STATE -->
+                <StackPanel x:Name="ResultControls" Spacing="14" Visibility="Collapsed">
+                    <TextBlock Text="Restoration complete" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock x:Name="ResultSummaryText" TextWrapping="Wrap" Opacity="0.8" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Before" VerticalAlignment="Center" />
+                        <Slider x:Name="CompareSlider" Minimum="0" Maximum="1" Width="150"
+                                ValueChanged="CompareSlider_ValueChanged" />
+                        <TextBlock Text="After" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ToggleButton x:Name="HeatMapToggle" Content="Show confidence heat map"
+                                  Click="HeatMapToggle_Click" HorizontalAlignment="Stretch" />
+
+                    <Button x:Name="ExportButton" Content="Export..." Click="ExportButton_Click"
+                            HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" />
+                    <Button Content="Adjust mask &amp; restore again" Click="BackToEditingButton_Click"
+                            HorizontalAlignment="Stretch" />
+                    <HyperlinkButton Content="Open full comparison &amp; history" Click="OpenCompareButton_Click"
+                                     HorizontalAlignment="Left" Padding="0" />
+
+                    <!-- Inline export options, revealed by the Export button so exporting never leaves this page. -->
+                    <Border x:Name="ExportOptions" Visibility="Collapsed" BorderBrush="Gray" BorderThickness="1"
+                            CornerRadius="4" Padding="12">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Format" FontWeight="SemiBold" />
+                            <RadioButtons x:Name="FormatButtons" SelectedIndex="0">
+                                <RadioButton Content="PNG (lossless, recommended)" />
+                                <RadioButton Content="JPEG" />
+                            </RadioButtons>
+                            <TextBlock Text="JPEG quality" />
+                            <Slider x:Name="QualitySlider" Minimum="1" Maximum="100" Value="95" />
+                            <Button Content="Choose file &amp; save" Click="ConfirmExportButton_Click"
+                                    HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

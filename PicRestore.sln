@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.Tests", "src\PicRestore.Tests\PicRestore.Tests.csproj", "{8FF50E6B-1A31-4D71-A9C9-1C433214C337}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.App", "src\PicRestore.App\PicRestore.App.csproj", "{101CEEE1-AC98-4189-96FB-5E27517B6709}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicRestore.Ml", "src\PicRestore.Ml\PicRestore.Ml.csproj", "{8F1A3AB6-4011-483C-8773-EA2B36B7A388}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{101CEEE1-AC98-4189-96FB-5E27517B6709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1A3AB6-4011-483C-8773-EA2B36B7A388}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1A3AB6-4011-483C-8773-EA2B36B7A388}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1A3AB6-4011-483C-8773-EA2B36B7A388}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1A3AB6-4011-483C-8773-EA2B36B7A388}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -62,8 +62,56 @@ public class RestorationPipelineTests
 
         pipeline.Run(image, mask, ProcessingSettings.CreateDefault(), project);
 
-        // Colour restoration, reconstruction, identity check, grain matching, AI-enhance (skipped but logged).
-        Assert.Equal(5, project.History.Count);
+        // Colour restoration, reconstruction, identity check, grain matching, AI-enhance (skipped but logged),
+        // subtle sharpening.
+        Assert.Equal(6, project.History.Count);
+    }
+
+    [Fact]
+    public void Run_KeepsTheReconstruction_WhenTheGuardFailsInAdvisoryMode()
+    {
+        var pipeline = new RestorationPipeline(new HistogramColorRestorer(), new MarkerInpainter(), new GrainMatcher(), new AlwaysFailGuard(), new NullFaceEnhancer());
+        var settings = ProcessingSettings.CreateDefault();
+        settings.MatchOriginalGrain = false;
+        settings.SharpeningAmount = 0f;
+        var project = new RestorationProject { OriginalFilePath = "test.png" };
+
+        RasterImage result = pipeline.Run(TestImages.CreateFlat(10, 10, 0.5f), new DamageMask(10, 10), settings, project);
+
+        Assert.Equal(MarkerInpainter.Marker, result.GetPixel(0, 0).R, precision: 5);
+        Assert.Contains(project.History, h => h.StageName == "Identity Check" && !h.Applied && h.Message.StartsWith("Warning only"));
+    }
+
+    [Fact]
+    public void Run_DiscardsTheReconstruction_WhenTheGuardFailsInStrictMode()
+    {
+        var pipeline = new RestorationPipeline(new HistogramColorRestorer(), new MarkerInpainter(), new GrainMatcher(), new AlwaysFailGuard(), new NullFaceEnhancer());
+        var settings = ProcessingSettings.CreateDefault();
+        settings.MatchOriginalGrain = false;
+        settings.SharpeningAmount = 0f;
+        settings.StrictIdentityGuard = true;
+
+        RasterImage result = pipeline.Run(TestImages.CreateFlat(10, 10, 0.5f), new DamageMask(10, 10), settings);
+
+        Assert.NotEqual(MarkerInpainter.Marker, result.GetPixel(0, 0).R);
+    }
+
+    private sealed class MarkerInpainter : IInpainter
+    {
+        public const float Marker = 0.123f;
+
+        public RasterImage Inpaint(RasterImage image, DamageMask mask, ProcessingSettings settings)
+        {
+            var output = image.Clone();
+            output.SetPixel(0, 0, Marker, Marker, Marker);
+            return output;
+        }
+    }
+
+    private sealed class AlwaysFailGuard : IFaceIdentityGuard
+    {
+        public IdentityCheckResult Validate(RasterImage original, RasterImage candidate, DamageMask mask) =>
+            new(false, 1f, "Test guard always fails.");
     }
 
     private static RestorationPipeline BuildPipeline(IFaceEnhancer enhancer) => new(

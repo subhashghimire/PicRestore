@@ -5,15 +5,19 @@
 
     <NavigationView x:Name="RootNavigationView"
                     IsBackButtonVisible="Collapsed"
-                    IsSettingsVisible="False"
+                    IsSettingsVisible="True"
                     PaneDisplayMode="Left"
                     SelectionChanged="RootNavigationView_SelectionChanged">
         <NavigationView.MenuItems>
             <NavigationViewItem x:Name="ImportItem" Content="Import" Tag="Import" IsSelected="True" />
             <NavigationViewItem Content="Mask Editor" Tag="MaskEditor" />
-            <NavigationViewItem Content="Compare" Tag="Compare" />
+            <NavigationViewItem x:Name="CompareItem" Content="Compare" Tag="Compare" />
             <NavigationViewItem Content="Export" Tag="Export" />
         </NavigationView.MenuItems>
+
+        <NavigationView.FooterMenuItems>
+            <NavigationViewItem Content="About" Tag="About" />
+        </NavigationView.FooterMenuItems>
 
         <Frame x:Name="ContentFrame" />
     </NavigationView>

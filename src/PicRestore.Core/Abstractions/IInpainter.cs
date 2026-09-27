@@ -5,7 +5,9 @@ namespace PicRestore.Core.Abstractions;
 
 /// <summary>
 /// Reconstructs pixels inside the damage mask from the surrounding, undamaged context. Implementations
-/// must never write outside the mask, and must never touch a protected ("never touch") pixel.
+/// must never change intact content beyond a narrow seam-blending margin around the mask (a few pixels,
+/// so a repair doesn't leave a hard edge or a halo of the damage's own rim), and must never touch a
+/// protected ("never touch") pixel.
 /// </summary>
 public interface IInpainter
 {

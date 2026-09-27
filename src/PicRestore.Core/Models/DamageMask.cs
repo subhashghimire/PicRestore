@@ -19,6 +19,12 @@ public sealed class DamageMask
     /// <summary>User-protected pixels ("never touch"), always excluded regardless of Probability.</summary>
     public bool[] Protected { get; }
 
+    /// <summary>
+    /// Faces whose intact pixels were locked against repair when this mask was built (see FaceLock).
+    /// Informational - the lock itself is already reflected in <see cref="Probability"/>.
+    /// </summary>
+    public IReadOnlyList<FaceRegion> LockedFaces { get; set; } = Array.Empty<FaceRegion>();
+
     public DamageMask(int width, int height)
     {
         if (width <= 0 || height <= 0)
@@ -62,11 +68,45 @@ public sealed class DamageMask
         Type[i] = DamageType.None;
     }
 
-    /// <summary>Whether a pixel should be repaired: above the threshold and not user-protected.</summary>
+    // Damage types whose content is actually missing and calls for spatial reconstruction, rather than
+    // just a colour/contrast correction in place. Kept as one place so the two members below (and any
+    // future caller) can never drift out of sync with each other.
+    private static bool IsReconstructableType(DamageType type) => type is
+        DamageType.WhiteOrBleachedPatch or
+        DamageType.CreaseScratchOrTear or
+        DamageType.StainOrDiscoloration or
+        DamageType.MetallicOrFoxingSpeckle;
+
+    /// <summary>Whether a pixel is flagged for attention at all: above the threshold and not user-protected.
+    /// This says nothing about HOW it should be handled - a faded pixel and a bleached-out one are both
+    /// "repairable" by this definition, even though only one of them is missing content. Used for
+    /// coverage display and for keeping already-flagged pixels out of the colour reference.</summary>
     public bool IsRepairable(int x, int y, float threshold)
     {
         int i = IndexOf(x, y);
         return !Protected[i] && Probability[i] >= threshold;
+    }
+
+    /// <summary>
+    /// Whether a pixel should have its CONTENT reconstructed (spatially filled from context) rather than
+    /// just colour/contrast-corrected in place. Per the design plan's damage-handling table, only actual
+    /// missing content - a bleached-out patch, a crease/scratch/tear, a stain, or metallic/foxing
+    /// speckle - calls for reconstruction; <see cref="DamageType.FadedLowContrast"/> and
+    /// <see cref="DamageType.YellowingOrColorCast"/> pixels still hold their real detail; diffusion-filling
+    /// them would destroy it to "fix" something the global colour restorer already handles losslessly.
+    /// Manually brushed-in damage (via <see cref="MarkDamaged"/>) defaults to
+    /// <see cref="DamageType.WhiteOrBleachedPatch"/>, so it is always reconstructable regardless of what
+    /// the automatic detector would have called it.
+    /// </summary>
+    public bool IsReconstructable(int x, int y, float threshold)
+    {
+        int i = IndexOf(x, y);
+        if (Protected[i] || Probability[i] < threshold)
+        {
+            return false;
+        }
+
+        return IsReconstructableType(Type[i]);
     }
 
     /// <summary>Share of the image (0-100) currently flagged for repair, ignoring protected pixels.</summary>
@@ -85,12 +125,36 @@ public sealed class DamageMask
         return 100f * repaired / Probability.Length;
     }
 
+    /// <summary>
+    /// Share of the image (0-100) that will actually be spatially reconstructed - a subset of
+    /// <see cref="CoveragePercentage"/>, since not every flagged pixel calls for reconstruction (see
+    /// <see cref="IsReconstructable"/>). This is what the "Reconstruction" pipeline stage
+    /// should report, so the audit trail says what was actually rebuilt rather than everything merely
+    /// flagged for some kind of attention.
+    /// </summary>
+    public float ReconstructedCoveragePercentage(float threshold)
+    {
+        if (Probability.Length == 0)
+            return 0f;
+
+        int reconstructed = 0;
+        for (int i = 0; i < Probability.Length; i++)
+        {
+            bool reconstructable = !Protected[i] && Probability[i] >= threshold && IsReconstructableType(Type[i]);
+            if (reconstructable)
+                reconstructed++;
+        }
+
+        return 100f * reconstructed / Probability.Length;
+    }
+
     public DamageMask Clone()
     {
         var clone = new DamageMask(Width, Height);
         Array.Copy(Probability, clone.Probability, Probability.Length);
         Array.Copy(Type, clone.Type, Type.Length);
         Array.Copy(Protected, clone.Protected, Protected.Length);
+        clone.LockedFaces = LockedFaces;
         return clone;
     }
 }
